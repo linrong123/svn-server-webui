@@ -67,7 +67,7 @@ ENV NODE_ENV=production \
 EXPOSE 80 5000
 
 # 数据卷
-VOLUME ["/svn/repos", "/svn/conf"]
+VOLUME ["/data"]
 
 # 启动
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

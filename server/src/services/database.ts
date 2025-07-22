@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import path from 'path';
 import { logger } from '../utils/logger';
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, '../../data/svn-webui.db');
+const dbPath = process.env.DB_PATH || '/app/data/svn-webui.db';
 export const db = new Database(dbPath);
 
 export async function setupDatabase() {

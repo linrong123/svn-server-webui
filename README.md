@@ -42,9 +42,7 @@ docker run -d \
   --name svn-server-webui \
   -p 8080:80 \
   -p 3000:5000 \
-  -v $(pwd)/data/repos:/svn/repos \
-  -v $(pwd)/data/conf:/svn/conf \
-  -v $(pwd)/data/app:/app/data \
+  -v $(pwd)/data:/data \
   -e ADMIN_USERNAME=admin \
   -e ADMIN_PASSWORD=admin123 \
   ghcr.io/yourusername/svn-server-webui:latest

@@ -1,8 +1,13 @@
 #!/bin/sh
 set -e
 
-# 创建必要的目录
-mkdir -p /svn/repos /svn/conf /app/data
+# 创建数据目录结构
+mkdir -p /data/repos /data/conf /data/app
+
+# 创建符号链接（如果不存在）
+[ ! -e /svn/repos ] && ln -s /data/repos /svn/repos
+[ ! -e /svn/conf ] && ln -s /data/conf /svn/conf
+[ ! -e /app/data ] && ln -s /data/app /app/data
 
 # 自动生成 JWT_SECRET（如果未设置）
 if [ -z "$JWT_SECRET" ]; then
@@ -32,8 +37,8 @@ EOF
 fi
 
 # 设置权限
-chown -R apache:apache /svn
-chmod -R 755 /svn
+chown -R apache:apache /data
+chmod -R 755 /data
 
 # 启动应用
 exec "$@"

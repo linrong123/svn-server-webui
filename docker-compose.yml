@@ -10,10 +10,8 @@ services:
       - "8080:80"     # SVN via HTTP
       - "3000:5000"   # Web UI
     volumes:
-      # 使用本地目录，便于备份和迁移
-      - ./data/repos:/svn/repos
-      - ./data/conf:/svn/conf
-      - ./data/app:/app/data
+      # 只需映射一个目录，简化使用
+      - ./data:/data
     environment:
       - SVN_HOSTNAME=localhost
       - SVN_PROTOCOL=http
