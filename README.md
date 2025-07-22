@@ -42,14 +42,15 @@ docker run -d \
   --name svn-server-webui \
   -p 8080:80 \
   -p 3000:5000 \
-  -v svn_repos:/svn/repos \
-  -v svn_conf:/svn/conf \
-  -v svn_data:/app/data \
+  -v $(pwd)/data/repos:/svn/repos \
+  -v $(pwd)/data/conf:/svn/conf \
+  -v $(pwd)/data/app:/app/data \
   -e ADMIN_USERNAME=admin \
   -e ADMIN_PASSWORD=admin123 \
-  -e JWT_SECRET=your-secret-key \
   ghcr.io/yourusername/svn-server-webui:latest
 ```
+
+> 注：数据将保存在当前目录的 `data` 文件夹中
 
 ## 环境变量配置
 
@@ -195,7 +196,6 @@ svn-server-webui/
 1. **生产环境部署前**：
    - 修改默认的管理员密码
    - 使用强密码策略
-   - 修改 JWT_SECRET 为随机字符串
    - 配置 HTTPS 访问
 
 2. **定期维护**：
