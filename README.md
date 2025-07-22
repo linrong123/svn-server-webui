@@ -212,7 +212,7 @@ npm run docker:build
    # 构建并推送多架构镜像
    ./build.sh v1.0.0 multi
 
-   # 使用 buildx 构建
+   # 使用 buildx 构建，同时更新版本 tag 和 latest tag
    ./build.sh v1.0.0 buildx
    ```
 

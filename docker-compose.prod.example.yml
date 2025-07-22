@@ -1,7 +1,7 @@
 
 services:
   svn-server:
-    image: ghcr.io/yourusername/svn-server-webui:latest
+    image: rongdede/svn-server-webui:latest
     container_name: svn-server-webui
     ports:
       - "443:80"      # 使用 HTTPS（需要配置反向代理）

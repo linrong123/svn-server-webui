@@ -1,6 +1,6 @@
 services:
   svn-server:
-    image: svn-server-webui:latest
+    image: rongdede/svn-server-webui:latest
     container_name: svn-server-webui
     ports:
       - "80:80"       # SVN via HTTP
