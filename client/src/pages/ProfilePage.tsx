@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Form, Input, Button, message, Typography, Divider } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
 import { userService } from '../services/userService';
 
@@ -12,22 +12,20 @@ const ProfilePage: React.FC = () => {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const updateMutation = useMutation(
-    (data: { email?: string; password?: string }) =>
+  const updateMutation = useMutation({
+    mutationFn: (data: { email?: string; password?: string }) =>
       userService.update(user!.id, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['users', 'me']);
-        message.success('Profile updated successfully');
-        form.resetFields(['password', 'confirmPassword']);
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to update profile');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users', 'me'] });
+      message.success('Profile updated successfully');
+      (form as any).resetFields(['password', 'confirmPassword']);
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to update profile');
+    },
+  });
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: { email?: string; password?: string; confirmPassword?: string }) => {
     const { confirmPassword, ...data } = values;
     const updateData: any = {};
     
@@ -98,8 +96,8 @@ const ProfilePage: React.FC = () => {
             label="Confirm Password"
             dependencies={['password']}
             rules={[
-              ({ getFieldValue }) => ({
-                validator(_, value) {
+              ({ getFieldValue }: any) => ({
+                validator(_: any, value: any) {
                   if (!value && !getFieldValue('password')) {
                     return Promise.resolve();
                   }
@@ -121,7 +119,7 @@ const ProfilePage: React.FC = () => {
             <Button 
               type="primary" 
               htmlType="submit" 
-              loading={updateMutation.isLoading}
+              loading={updateMutation.isPending}
               block
             >
               Update Profile

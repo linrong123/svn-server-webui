@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Space, Modal, Form, Input, Select, message, Popconfirm, Tag, Typography } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { userService } from '../services/userService';
 import { authService } from '../services/authService';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,56 +19,53 @@ const UsersPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { user: currentUser } = useAuth();
 
-  const { data: users = [], isLoading } = useQuery('users', userService.list);
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.list,
+  });
 
-  const createMutation = useMutation(
-    (data: { username: string; password: string; email?: string }) =>
+  const createMutation = useMutation({
+    mutationFn: (data: { username: string; password: string; email?: string }) =>
       authService.register(data.username, data.password, data.email),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('users');
-        message.success('User created successfully');
-        setCreateModalVisible(false);
-        createForm.resetFields();
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to create user');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      message.success('User created successfully');
+      setCreateModalVisible(false);
+      (createForm as any).resetFields();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to create user');
+    },
+  });
 
-  const updateMutation = useMutation(
-    ({ id, data }: { id: number; data: any }) =>
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
       userService.update(id, data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('users');
-        message.success('User updated successfully');
-        setEditModalVisible(false);
-        editForm.resetFields();
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to update user');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      message.success('User updated successfully');
+      setEditModalVisible(false);
+      (editForm as any).resetFields();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to update user');
+    },
+  });
 
-  const deleteMutation = useMutation(
-    (id: number) => userService.delete(id),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('users');
-        message.success('User deleted successfully');
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to delete user');
-      },
-    }
-  );
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => userService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      message.success('User deleted successfully');
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to delete user');
+    },
+  });
 
   const handleEdit = (user: any) => {
     setSelectedUser(user);
-    editForm.setFieldsValue({
+    (editForm as any).setFieldsValue({
       email: user.email,
       role: user.role,
     });
@@ -166,7 +163,7 @@ const UsersPage: React.FC = () => {
         <Form
           form={createForm}
           layout="vertical"
-          onFinish={(values) => createMutation.mutate(values)}
+          onFinish={(values: { username: string; password: string; email?: string }) => createMutation.mutate(values)}
         >
           <Form.Item
             name="username"
@@ -200,7 +197,7 @@ const UsersPage: React.FC = () => {
 
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" loading={createMutation.isLoading}>
+              <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
                 Create
               </Button>
               <Button onClick={() => setCreateModalVisible(false)}>
@@ -220,7 +217,7 @@ const UsersPage: React.FC = () => {
         <Form
           form={editForm}
           layout="vertical"
-          onFinish={(values) =>
+          onFinish={(values: { email?: string; password?: string; role?: string }) =>
             updateMutation.mutate({ id: selectedUser?.id, data: values })
           }
         >
@@ -249,7 +246,7 @@ const UsersPage: React.FC = () => {
 
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" loading={updateMutation.isLoading}>
+              <Button type="primary" htmlType="submit" loading={updateMutation.isPending}>
                 Update
               </Button>
               <Button onClick={() => setEditModalVisible(false)}>

@@ -31,11 +31,11 @@ const RepositoryInfo: React.FC<RepositoryInfoProps> = ({ repository }) => {
             ? dayjs(repository.created_at).format('YYYY-MM-DD HH:mm:ss')
             : '-'}
         </Descriptions.Item>
-        <Descriptions.Item label="SVN URL">
-          <code>svn://localhost/svn/{repository.name}</code>
+        <Descriptions.Item label="访问地址">
+          <code>http://[服务器IP]/svn/{repository.name}</code>
         </Descriptions.Item>
-        <Descriptions.Item label="HTTP URL">
-          <code>http://localhost:8080/svn/{repository.name}</code>
+        <Descriptions.Item label="命令示例">
+          <code>svn checkout http://[服务器IP]/svn/{repository.name}</code>
         </Descriptions.Item>
       </Descriptions>
     </Card>

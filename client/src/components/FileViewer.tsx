@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spin, message, Alert } from 'antd';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { repositoryService } from '../services/repositoryService';
@@ -12,15 +12,16 @@ interface FileViewerProps {
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({ repositoryName, filePath, revision }) => {
-  const { data: content, isLoading, error } = useQuery(
-    ['file-content', repositoryName, filePath, revision],
-    () => repositoryService.getFileContent(repositoryName, filePath, revision),
-    {
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to load file content');
-      },
+  const { data: content, isLoading, error } = useQuery({
+    queryKey: ['file-content', repositoryName, filePath, revision],
+    queryFn: () => repositoryService.getFileContent(repositoryName, filePath, revision),
+  });
+
+  React.useEffect(() => {
+    if (error) {
+      message.error((error as any).response?.data?.error?.message || 'Failed to load file content');
     }
-  );
+  }, [error]);
 
   if (isLoading) {
     return (

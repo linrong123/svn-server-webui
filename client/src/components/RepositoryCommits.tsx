@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, Card, Tag, Typography, Spin, message, Empty, Button } from 'antd';
 import { UserOutlined, ClockCircleOutlined, ReloadOutlined } from '@ant-design/icons';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { repositoryService } from '../services/repositoryService';
 import dayjs from 'dayjs';
 
@@ -12,15 +12,16 @@ interface RepositoryCommitsProps {
 }
 
 const RepositoryCommits: React.FC<RepositoryCommitsProps> = ({ repositoryName }) => {
-  const { data: commits = [], isLoading, refetch } = useQuery(
-    ['repository-commits', repositoryName],
-    () => repositoryService.getCommitLog(repositoryName, 50),
-    {
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to load commits');
-      },
+  const { data: commits = [], isLoading, refetch, error } = useQuery({
+    queryKey: ['repository-commits', repositoryName],
+    queryFn: () => repositoryService.getCommitLog(repositoryName, 50),
+  });
+
+  React.useEffect(() => {
+    if (error) {
+      message.error((error as any).response?.data?.error?.message || 'Failed to load commits');
     }
-  );
+  }, [error]);
 
   if (isLoading) {
     return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col, Card, Statistic, List, Tag, Typography } from 'antd';
 import { FolderOutlined, UserOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { repositoryService } from '../services/repositoryService';
 import { userService } from '../services/userService';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,16 +15,16 @@ const { Title } = Typography;
 const DashboardPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
   
-  const { data: repositories = [] } = useQuery(
-    'repositories',
-    repositoryService.list
-  );
+  const { data: repositories = [] } = useQuery({
+    queryKey: ['repositories'],
+    queryFn: repositoryService.list,
+  });
 
-  const { data: users = [] } = useQuery(
-    'users',
-    userService.list,
-    { enabled: isAdmin }
-  );
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: userService.list,
+    enabled: isAdmin,
+  });
 
   const recentRepos = [...repositories]
     .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())

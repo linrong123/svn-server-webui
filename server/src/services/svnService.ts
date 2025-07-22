@@ -43,8 +43,13 @@ export class SvnService {
     try {
       await this.execCommand('svnadmin', ['create', repoPath]);
       
-      // Set permissions
-      await this.execCommand('chown', ['-R', 'apache:apache', repoPath]);
+      // Set permissions (may fail on non-Linux hosts)
+      try {
+        await this.execCommand('chown', ['-R', 'apache:apache', repoPath]);
+      } catch (error) {
+        logger.warn(`Could not set permissions for ${repoPath} (non-Linux host?):`, error);
+        // Continue anyway - permissions might work differently on the host
+      }
       
       logger.info(`Created SVN repository: ${name}`);
     } catch (error) {

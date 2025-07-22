@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Tree, Card, Spin, message, Empty, Button, Modal } from 'antd';
 import { FileOutlined, FolderOutlined, ReloadOutlined } from '@ant-design/icons';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { repositoryService } from '../services/repositoryService';
 import { TreeNode } from '../types';
 import FileViewer from './FileViewer';
@@ -16,15 +16,16 @@ const RepositoryBrowser: React.FC<RepositoryBrowserProps> = ({ repositoryName })
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [fileModalVisible, setFileModalVisible] = useState(false);
 
-  const { data: tree, isLoading, refetch } = useQuery(
-    ['repository-tree', repositoryName],
-    () => repositoryService.browse(repositoryName, '/'),
-    {
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to load repository tree');
-      },
+  const { data: tree, isLoading, refetch } = useQuery({
+    queryKey: ['repository-tree', repositoryName],
+    queryFn: () => repositoryService.browse(repositoryName, '/'),
+  });
+
+  React.useEffect(() => {
+    if (tree === undefined && !isLoading) {
+      message.error('Failed to load repository tree');
     }
-  );
+  }, [tree, isLoading]);
 
   const convertToAntdTree = (node: TreeNode): DataNode => {
     const isDirectory = node.type === 'directory';

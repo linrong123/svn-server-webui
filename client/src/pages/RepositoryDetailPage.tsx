@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tabs, Breadcrumb, Typography, Spin, message } from 'antd';
 import { FolderOutlined, HomeOutlined } from '@ant-design/icons';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { repositoryService } from '../services/repositoryService';
 import RepositoryBrowser from '../components/RepositoryBrowser';
 import RepositoryCommits from '../components/RepositoryCommits';
@@ -15,16 +15,17 @@ const RepositoryDetailPage: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [activeTab, setActiveTab] = useState('browse');
 
-  const { data: repository, isLoading, error } = useQuery(
-    ['repository', name],
-    () => repositoryService.get(name!),
-    {
-      enabled: !!name,
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to load repository');
-      },
+  const { data: repository, isLoading, error } = useQuery({
+    queryKey: ['repository', name],
+    queryFn: () => repositoryService.get(name!),
+    enabled: !!name,
+  });
+
+  React.useEffect(() => {
+    if (error) {
+      message.error((error as any).response?.data?.error?.message || 'Failed to load repository');
     }
-  );
+  }, [error]);
 
   if (isLoading) {
     return (

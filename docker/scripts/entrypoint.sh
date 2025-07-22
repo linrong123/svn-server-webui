@@ -44,9 +44,18 @@ admin = ${ADMIN_USERNAME:-admin}
 EOF
 fi
 
-# 设置权限
-chown -R apache:apache /data
-chmod -R 755 /data
+# 设置权限（仅对容器内的目录）
+# 注意：在某些环境下（如 macOS），可能无法修改挂载目录的权限
+if [ -w /data ]; then
+    chown -R apache:apache /data 2>/dev/null || true
+    chmod -R 755 /data 2>/dev/null || true
+else
+    echo "Warning: Cannot change ownership of /data (running on non-Linux host?)"
+fi
+
+# 确保 Apache 用户可以访问必要的目录
+chown -R apache:apache /svn 2>/dev/null || true
+chown -R apache:apache /app/data 2>/dev/null || true
 
 # 启动应用
 exec "$@"

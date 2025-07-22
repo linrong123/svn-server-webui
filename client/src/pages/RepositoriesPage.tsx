@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Button, Space, Modal, Form, Input, message, Popconfirm, Tag, Typography } from 'antd';
 import { PlusOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { repositoryService } from '../services/repositoryService';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,41 +17,37 @@ const RepositoriesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
 
-  const { data: repositories = [], isLoading } = useQuery(
-    'repositories',
-    repositoryService.list
-  );
+  const { data: repositories = [], isLoading } = useQuery({
+    queryKey: ['repositories'],
+    queryFn: repositoryService.list,
+  });
 
-  const createMutation = useMutation(
-    (data: { name: string; description?: string }) => 
+  const createMutation = useMutation({
+    mutationFn: (data: { name: string; description?: string }) => 
       repositoryService.create(data.name, data.description),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('repositories');
-        message.success('Repository created successfully');
-        setCreateModalVisible(false);
-        form.resetFields();
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to create repository');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['repositories'] });
+      message.success('Repository created successfully');
+      setCreateModalVisible(false);
+      (form as any).resetFields();
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to create repository');
+    },
+  });
 
-  const deleteMutation = useMutation(
-    (name: string) => repositoryService.delete(name),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('repositories');
-        message.success('Repository deleted successfully');
-      },
-      onError: (error: any) => {
-        message.error(error.response?.data?.error?.message || 'Failed to delete repository');
-      },
-    }
-  );
+  const deleteMutation = useMutation({
+    mutationFn: (name: string) => repositoryService.delete(name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['repositories'] });
+      message.success('Repository deleted successfully');
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to delete repository');
+    },
+  });
 
-  const handleCreate = async (values: any) => {
+  const handleCreate = async (values: { name: string; description?: string }) => {
     createMutation.mutate(values);
   };
 
@@ -178,7 +174,7 @@ const RepositoriesPage: React.FC = () => {
 
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" loading={createMutation.isLoading}>
+              <Button type="primary" htmlType="submit" loading={createMutation.isPending}>
                 Create
               </Button>
               <Button onClick={() => setCreateModalVisible(false)}>
