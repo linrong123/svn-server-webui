@@ -78,12 +78,20 @@ docker run -v /your/data/path:/data ...
 **数据目录结构**：
 ```
 data/
-├── repos/      # SVN 仓库数据
-├── conf/       # SVN 用户认证和权限配置
-└── app/        # Web UI 数据库（用户、仓库元数据）
+├── repos/      # SVN 仓库数据（代码和历史记录）
+├── conf/       # SVN 用户认证文件
+│   ├── svn-auth-file    # 用户密码
+│   └── svn-access-file  # 访问权限
+└── app/        # Web UI 数据库
+    └── svn-webui.db     # 用户信息、仓库元数据、权限设置
 ```
 
 **备份**：直接复制您挂载的数据目录即可。
+
+**数据库说明**：
+- 数据库仅保存 Web UI 相关信息（用户、仓库描述、权限）
+- 删除数据库不会影响 SVN 仓库数据
+- 删除数据库后会重建默认管理员账号，但需要重新创建其他用户
 
 **注意事项**：
 - 环境变量 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD` 仅在首次启动时生效
