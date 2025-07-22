@@ -77,8 +77,8 @@ data/
 **迁移**：将 `data` 目录复制到新环境，启动容器即可恢复所有状态。
 
 **注意事项**：
-- 如果数据库已存在，`ADMIN_USERNAME` 和 `ADMIN_PASSWORD` 环境变量只会更新 SVN 认证密码
-- Web UI 的密码需要在界面中手动修改，或删除数据库重新初始化
+- 环境变量 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD` 仅在首次启动时生效
+- 已有数据时，所有密码修改都应通过 Web UI 进行（会自动同步到 SVN）
 
 ## 使用指南
 

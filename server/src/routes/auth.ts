@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { execSync } from 'child_process';
 import { db } from '../services/database';
 import { AppError } from '../middleware/errorHandler';
 import asyncHandler from 'express-async-handler';
@@ -66,6 +67,16 @@ router.post('/register', asyncHandler(async (req, res) => {
   const result = db.prepare(
     'INSERT INTO users (username, password, email) VALUES (?, ?, ?)'
   ).run(username, hashedPassword, email || null);
+
+  // Create SVN password
+  try {
+    execSync(`htpasswd -b /svn/conf/svn-auth-file ${username} ${password}`, {
+      stdio: 'ignore'
+    });
+  } catch (error) {
+    // Log but don't fail registration
+    console.error('Failed to create SVN password:', error);
+  }
 
   const token = jwt.sign(
     { id: result.lastInsertRowid, username, role: 'user' },

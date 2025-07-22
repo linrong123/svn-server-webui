@@ -53,11 +53,6 @@ router.post('/', authenticate, authorize(['admin']), asyncHandler(async (req, re
     'INSERT INTO repositories (name, description, created_by) VALUES (?, ?, ?)'
   ).run(name, description || null, req.user!.id);
 
-  // Update Apache auth file
-  execSync(`htpasswd -b /svn/conf/svn-auth-file ${req.user!.username} ${req.user!.username}`, {
-    stdio: 'ignore'
-  });
-
   res.status(201).json({
     id: result.lastInsertRowid,
     name,
