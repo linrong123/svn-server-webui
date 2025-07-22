@@ -63,8 +63,19 @@ docker run -d \
 
 ## 数据持久化
 
-所有数据都保存在本地 `./data` 目录中：
+默认情况下，所有数据保存在当前目录的 `./data` 文件夹中。您可以修改 `docker-compose.yml` 来挂载到其他位置：
 
+```yaml
+volumes:
+  - /your/custom/path:/data  # 修改为您想要的路径
+```
+
+或使用 Docker 命令时指定：
+```bash
+docker run -v /your/data/path:/data ...
+```
+
+**数据目录结构**：
 ```
 data/
 ├── repos/      # SVN 仓库数据
@@ -72,9 +83,7 @@ data/
 └── app/        # Web UI 数据库（用户、仓库元数据）
 ```
 
-**备份**：只需备份整个 `data` 目录即可保存所有数据。
-
-**迁移**：将 `data` 目录复制到新环境，启动容器即可恢复所有状态。
+**备份**：直接复制您挂载的数据目录即可。
 
 **注意事项**：
 - 环境变量 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD` 仅在首次启动时生效
@@ -201,7 +210,7 @@ svn-server-webui/
    - 配置 HTTPS 访问
 
 2. **定期维护**：
-   - 备份数据：`./scripts/backup.sh`
+   - 备份数据目录
    - 更新 Docker 镜像
    - 监控系统日志
 
