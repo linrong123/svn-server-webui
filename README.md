@@ -197,7 +197,7 @@ svn-server-webui/
    - 配置 HTTPS 访问
 
 2. **定期维护**：
-   - 备份 SVN 仓库数据
+   - 备份数据：`./scripts/backup.sh`
    - 更新 Docker 镜像
    - 监控系统日志
 
