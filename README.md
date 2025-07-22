@@ -22,18 +22,12 @@ git clone https://github.com/yourusername/svn-server-webui.git
 cd svn-server-webui
 ```
 
-2. 复制环境变量配置：
-```bash
-cp .env.example .env
-# 编辑 .env 文件，修改必要的配置
-```
-
-3. 启动服务：
+2. 启动服务：
 ```bash
 docker-compose up -d
 ```
 
-4. 访问服务：
+3. 访问服务：
 - Web UI: http://localhost:3000
 - SVN Server: http://localhost:8080/svn/
 
@@ -64,9 +58,24 @@ docker run -d \
 | `PORT` | Web UI 端口 | 5000 |
 | `SVN_REPOS_PATH` | SVN 仓库存储路径 | /svn/repos |
 | `SVN_CONF_PATH` | SVN 配置文件路径 | /svn/conf |
-| `JWT_SECRET` | JWT 密钥（生产环境请修改） | your-secret-key |
+| `JWT_SECRET` | JWT 密钥（容器启动时自动生成） | 自动生成 |
 | `ADMIN_USERNAME` | 默认管理员用户名 | admin |
-| `ADMIN_PASSWORD` | 默认管理员密码 | admin123 |
+| `ADMIN_PASSWORD` | 默认管理员密码（建议修改） | admin123 |
+
+## 数据持久化
+
+所有数据都保存在本地 `./data` 目录中：
+
+```
+data/
+├── repos/      # SVN 仓库数据
+├── conf/       # SVN 用户认证和权限配置
+└── app/        # Web UI 数据库（用户、仓库元数据）
+```
+
+**备份**：只需备份整个 `data` 目录即可保存所有数据。
+
+**迁移**：将 `data` 目录复制到新环境，启动容器即可恢复所有状态。
 
 ## 使用指南
 

@@ -44,9 +44,13 @@ coverage/
 /svn/repos/*
 !/svn/repos/.gitkeep
 
-# Data directory
-/data/*
-!/data/.gitkeep
+# Data directory (保留 .gitkeep)
+/data/repos/*
+!/data/repos/.gitkeep
+/data/conf/*
+!/data/conf/.gitkeep
+/data/app/*
+!/data/app/.gitkeep
 
 # Temporary files
 *.tmp

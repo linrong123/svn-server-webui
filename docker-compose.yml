@@ -10,14 +10,14 @@ services:
       - "8080:80"     # SVN via HTTP
       - "3000:5000"   # Web UI
     volumes:
-      - svn_repos:/svn/repos
-      - svn_conf:/svn/conf
-      - svn_data:/app/data
+      # 使用本地目录，便于备份和迁移
+      - ./data/repos:/svn/repos
+      - ./data/conf:/svn/conf
+      - ./data/app:/app/data
     environment:
       - SVN_HOSTNAME=localhost
       - SVN_PROTOCOL=http
       - SVN_PORT=8080
-      - JWT_SECRET=your-secret-key-change-this
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=admin123
       - NODE_ENV=production
@@ -29,10 +29,4 @@ services:
       retries: 3
       start_period: 40s
 
-volumes:
-  svn_repos:
-    name: svn_repos
-  svn_conf:
-    name: svn_conf
-  svn_data:
-    name: svn_data
+# 数据已映射到本地 ./data 目录，无需定义 volumes
