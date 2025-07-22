@@ -15,14 +15,21 @@ if [ -z "$JWT_SECRET" ]; then
     echo "Generated JWT_SECRET automatically"
 fi
 
+# 检查是否需要初始化（数据库或认证文件不存在）
+NEED_INIT=false
+if [ ! -f /app/data/svn-webui.db ] || [ ! -f /svn/conf/svn-auth-file ]; then
+    NEED_INIT=true
+fi
+
 # 初始化SVN认证文件
 if [ ! -f /svn/conf/svn-auth-file ]; then
     touch /svn/conf/svn-auth-file
-    # 仅在首次创建时设置管理员密码
-    if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
-        htpasswd -b /svn/conf/svn-auth-file "$ADMIN_USERNAME" "$ADMIN_PASSWORD"
-        echo "Created SVN password for $ADMIN_USERNAME"
-    fi
+fi
+
+# 如果需要初始化，设置管理员密码
+if [ "$NEED_INIT" = true ] && [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
+    htpasswd -b /svn/conf/svn-auth-file "$ADMIN_USERNAME" "$ADMIN_PASSWORD"
+    echo "Initialized admin password for $ADMIN_USERNAME"
 fi
 
 # 初始化SVN访问控制文件

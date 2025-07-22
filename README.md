@@ -93,6 +93,11 @@ data/
 - 删除数据库不会影响 SVN 仓库数据
 - 删除数据库后会重建默认管理员账号，但需要重新创建其他用户
 
+**⚠️ 重要警告**：
+- 数据库和 SVN 认证是分离的两个系统
+- 如果只删除数据库，SVN 认证文件中的用户仍然存在
+- 建议：如需重置，同时删除 `data/app/svn-webui.db` 和 `data/conf/svn-auth-file`
+
 **注意事项**：
 - 环境变量 `ADMIN_USERNAME` 和 `ADMIN_PASSWORD` 仅在首次启动时生效
 - 已有数据时，所有密码修改都应通过 Web UI 进行（会自动同步到 SVN）
@@ -235,6 +240,13 @@ svn-server-webui/
 ### 仓库创建失败
 - 检查磁盘空间
 - 确认容器有写入权限
+
+### 用户认证不一致
+如果 Web UI 和 SVN 用户不同步：
+1. 停止容器：`docker-compose down`
+2. 删除认证文件：`rm data/app/svn-webui.db data/conf/svn-auth-file`
+3. 重启容器：`docker-compose up -d`
+4. 重新创建所有用户
 
 ## 贡献指南
 
