@@ -81,9 +81,11 @@ const LoginPage: React.FC = () => {
           </Form.Item>
         </Form>
         
-        <div style={{ marginTop: 16, textAlign: 'center', color: '#666' }}>
-          Default credentials: admin / admin123
-        </div>
+        {process.env.NODE_ENV === 'development' && (
+          <div style={{ marginTop: 16, textAlign: 'center', color: '#666' }}>
+            开发环境默认账号: admin / admin123
+          </div>
+        )}
       </Card>
     </div>
   );
