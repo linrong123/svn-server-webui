@@ -5,7 +5,7 @@ import { useQuery } from 'react-query';
 import { repositoryService } from '../services/repositoryService';
 import dayjs from 'dayjs';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 interface RepositoryCommitsProps {
   repositoryName: string;

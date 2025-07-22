@@ -1,19 +1,20 @@
 # 多阶段构建 - 构建前端
-FROM node:20-alpine AS client-builder
+FROM node:20 AS client-builder
 WORKDIR /app
-COPY package*.json ./
-COPY client/package*.json ./client/
-COPY server/package*.json ./server/
-RUN npm ci
+COPY package.json ./
+COPY client/package.json ./client/
+COPY server/package.json ./server/
+RUN npm install
 COPY client ./client
+COPY server ./server
 RUN npm run build:client
 
 # 多阶段构建 - 构建后端
 FROM node:20-alpine AS server-builder
 WORKDIR /app
 COPY package*.json ./
-COPY server/package*.json ./server/
-RUN npm ci --workspace=server --omit=dev
+COPY server/package.json ./server/
+RUN npm install --workspace=server --omit=dev
 COPY server ./server
 COPY --from=client-builder /app/server/public ./server/public
 RUN npm run build:server

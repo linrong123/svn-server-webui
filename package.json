@@ -18,7 +18,8 @@
     "test": "npm run test:server && npm run test:client",
     "test:server": "npm run test --workspace=server",
     "test:client": "npm run test --workspace=client",
-    "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t svn-server-webui .",
+    "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t svn-server-webui --load .",
+    "docker:build:push": "docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/${GITHUB_USER:-yourusername}/svn-server-webui --push .",
     "docker:run": "docker-compose up -d"
   },
   "devDependencies": {

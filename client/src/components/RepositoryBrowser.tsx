@@ -37,7 +37,7 @@ const RepositoryBrowser: React.FC<RepositoryBrowserProps> = ({ repositoryName })
     };
   };
 
-  const handleSelect = (selectedKeys: React.Key[], info: any) => {
+  const handleSelect = (_selectedKeys: React.Key[], info: any) => {
     const node = info.node;
     if (node.isLeaf) {
       setSelectedFile(node.key as string);

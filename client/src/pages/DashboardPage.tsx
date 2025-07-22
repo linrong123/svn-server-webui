@@ -94,11 +94,11 @@ const DashboardPage: React.FC = () => {
               />
             </List.Item>
           )}
-          empty={
+          locale={{emptyText: (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               No repositories yet
             </div>
-          }
+          )}}
         />
       </Card>
     </div>

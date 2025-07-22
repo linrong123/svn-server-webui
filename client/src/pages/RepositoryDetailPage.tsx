@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Tabs, Breadcrumb, Typography, Spin, message } from 'antd';
 import { FolderOutlined, HomeOutlined } from '@ant-design/icons';
 import { useQuery } from 'react-query';
@@ -13,7 +13,6 @@ const { TabPane } = Tabs;
 
 const RepositoryDetailPage: React.FC = () => {
   const { name } = useParams<{ name: string }>();
-  const location = useLocation();
   const [activeTab, setActiveTab] = useState('browse');
 
   const { data: repository, isLoading, error } = useQuery(
