@@ -18,7 +18,7 @@ declare global {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = (req: Request, _res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
@@ -35,7 +35,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const authorize = (roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new AppError('Unauthorized', 401);
     }

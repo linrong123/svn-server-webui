@@ -5,7 +5,6 @@ import { svnService } from '../services/svnService';
 import { authenticate, authorize } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import asyncHandler from 'express-async-handler';
-import { execSync } from 'child_process';
 
 const router = Router();
 
@@ -15,7 +14,7 @@ const createRepoSchema = z.object({
 });
 
 // List all repositories
-router.get('/', authenticate, asyncHandler(async (req, res) => {
+router.get('/', authenticate, asyncHandler(async (_req, res) => {
   const svnRepos = await svnService.listRepositories();
   
   const dbRepos = db.prepare(`

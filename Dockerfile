@@ -14,10 +14,18 @@ FROM node:20-alpine AS server-builder
 WORKDIR /app
 COPY package*.json ./
 COPY server/package.json ./server/
-RUN npm install --workspace=server --omit=dev
+# 先安装所有依赖（包括开发依赖）来构建
+RUN npm install --workspace=server
 COPY server ./server
 COPY --from=client-builder /app/server/public ./server/public
 RUN npm run build:server
+
+# 准备生产环境依赖
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+COPY package*.json ./
+COPY server/package.json ./server/
+RUN npm install --workspace=server --omit=dev
 
 # 最终镜像
 FROM alpine:3.19
@@ -50,7 +58,7 @@ COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # 复制应用程序
 WORKDIR /app
 COPY --from=server-builder /app/server/package*.json ./
-COPY --from=server-builder /app/server/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=server-builder /app/server/dist ./dist
 COPY --from=server-builder /app/server/public ./public
 

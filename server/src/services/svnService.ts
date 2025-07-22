@@ -101,7 +101,7 @@ export class SvnService {
     const repoPath = path.join(SVN_REPOS_PATH, name);
     
     try {
-      const info = await this.execCommand('svnlook', ['info', repoPath]);
+      await this.execCommand('svnlook', ['info', repoPath]);
       const uuid = await this.execCommand('svnlook', ['uuid', repoPath]);
       const youngest = await this.execCommand('svnlook', ['youngest', repoPath]);
 
@@ -117,7 +117,7 @@ export class SvnService {
     }
   }
 
-  async browseRepository(name: string, path: string = '/', revision?: number): Promise<any> {
+  async browseRepository(name: string, svnPath: string = '/', revision?: number): Promise<any> {
     const repoPath = path.join(SVN_REPOS_PATH, name);
     
     try {
@@ -125,16 +125,16 @@ export class SvnService {
       if (revision !== undefined) {
         args.push('-r', revision.toString());
       }
-      if (path !== '/') {
-        args.push(path);
+      if (svnPath !== '/') {
+        args.push(svnPath);
       }
 
       const output = await this.execCommand('svnlook', args);
       const lines = output.split('\n').filter(line => line.trim());
       
-      const tree: any = { name: path, type: 'directory', children: [] };
+      const tree: any = { name: svnPath, type: 'directory', children: [] };
       const pathMap = new Map<string, any>();
-      pathMap.set(path, tree);
+      pathMap.set(svnPath, tree);
 
       for (const line of lines) {
         const trimmed = line.trim();
@@ -211,7 +211,7 @@ export class SvnService {
             message: log.trim(),
             changes: changed.trim().split('\n').filter(line => line.trim())
           });
-        } catch (error) {
+        } catch {
           // Skip if revision doesn't exist
           continue;
         }

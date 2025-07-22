@@ -16,7 +16,7 @@ const updateUserSchema = z.object({
 });
 
 // Get all users (admin only)
-router.get('/', authenticate, authorize(['admin']), asyncHandler(async (req, res) => {
+router.get('/', authenticate, authorize(['admin']), asyncHandler(async (_req, res) => {
   const users = db.prepare(`
     SELECT id, username, email, role, created_at, updated_at
     FROM users

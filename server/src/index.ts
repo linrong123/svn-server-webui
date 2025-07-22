@@ -26,11 +26,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/repositories', repoRoutes);
 app.use('/api/users', userRoutes);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.get('*', (req, res) => {
+app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 

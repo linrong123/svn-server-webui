@@ -18,8 +18,8 @@ export const errorHandler = (
   err: Error | AppError,
   req: Request,
   res: Response,
-  next: NextFunction
-) => {
+  _next: NextFunction
+): void => {
   if (err instanceof AppError) {
     logger.error({
       message: err.message,
@@ -29,12 +29,13 @@ export const errorHandler = (
       method: req.method
     });
 
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       error: {
         message: err.message,
         statusCode: err.statusCode
       }
     });
+    return;
   }
 
   logger.error({
