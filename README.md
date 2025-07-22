@@ -46,7 +46,7 @@ docker-compose -f docker-compose.build.yml up -d
 
 4. 访问服务：
 
-- Web UI: http://localhost:3000
+- Web UI: http://localhost:5000
 - SVN Server: http://localhost/svn/
 
 默认管理员账号：

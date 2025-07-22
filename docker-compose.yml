@@ -4,7 +4,7 @@ services:
     container_name: svn-server-webui
     ports:
       - "80:80"       # SVN via HTTP
-      - "3000:5000"   # Web UI (改用3000端口避免与AirPlay冲突)
+      - "5000:5000"   # Web UI (改用3000端口避免与AirPlay冲突)
     volumes:
       # 只需映射一个目录，简化使用
       - ./data:/data
