@@ -18,10 +18,12 @@ fi
 # 初始化SVN认证文件
 if [ ! -f /svn/conf/svn-auth-file ]; then
     touch /svn/conf/svn-auth-file
-    # 创建默认管理员账户
-    if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
-        htpasswd -b /svn/conf/svn-auth-file "$ADMIN_USERNAME" "$ADMIN_PASSWORD"
-    fi
+fi
+
+# 始终同步管理员密码（如果提供）
+if [ -n "$ADMIN_USERNAME" ] && [ -n "$ADMIN_PASSWORD" ]; then
+    htpasswd -b /svn/conf/svn-auth-file "$ADMIN_USERNAME" "$ADMIN_PASSWORD"
+    echo "Updated SVN password for $ADMIN_USERNAME"
 fi
 
 # 初始化SVN访问控制文件
