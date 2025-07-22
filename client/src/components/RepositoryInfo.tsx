@@ -1,13 +1,36 @@
-import React from 'react';
-import { Descriptions, Card, Tag } from 'antd';
+import React, { useMemo } from 'react';
+import { Descriptions, Card, Tag, Typography } from 'antd';
 import { Repository } from '../types';
 import dayjs from 'dayjs';
+
+const { Text } = Typography;
 
 interface RepositoryInfoProps {
   repository: Repository;
 }
 
 const RepositoryInfo: React.FC<RepositoryInfoProps> = ({ repository }) => {
+  // 动态获取当前访问的主机地址
+  const svnBaseUrl = useMemo(() => {
+    const host = window.location.hostname;
+    // SVN 始终使用 HTTP 协议（因为 mod_dav_svn 配置）
+    const protocol = 'http:';
+    
+    // 端口映射规则：
+    // Web UI 端口 -> SVN 端口
+    const portMapping: Record<string, string> = {
+      '7001': '8090',  // 生产环境常用配置
+      '3000': '80',    // 本地开发
+      '5000': '80',    // Docker 默认
+    };
+    
+    const webPort = window.location.port || '80';
+    const svnPort = portMapping[webPort] || '80';
+    
+    // 构建 URL，标准端口（80/443）不显示
+    const portSuffix = (svnPort === '80' || svnPort === '443') ? '' : `:${svnPort}`;
+    return `${protocol}//${host}${portSuffix}`;
+  }, []);
   return (
     <Card title="Repository Information">
       <Descriptions bordered column={1}>
@@ -32,10 +55,10 @@ const RepositoryInfo: React.FC<RepositoryInfoProps> = ({ repository }) => {
             : '-'}
         </Descriptions.Item>
         <Descriptions.Item label="访问地址">
-          <code>http://[服务器IP]/svn/{repository.name}</code>
+          <Text code copyable>{svnBaseUrl}/svn/{repository.name}</Text>
         </Descriptions.Item>
-        <Descriptions.Item label="命令示例">
-          <code>svn checkout http://[服务器IP]/svn/{repository.name}</code>
+        <Descriptions.Item label="检出命令">
+          <Text code copyable>svn checkout {svnBaseUrl}/svn/{repository.name}</Text>
         </Descriptions.Item>
       </Descriptions>
     </Card>

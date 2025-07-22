@@ -153,6 +153,11 @@ svn checkout http://localhost/svn/your-repo-name
 svn commit -m "Your commit message" --username your-username
 ```
 
+**智能地址显示**：
+- Web UI 会根据你访问的地址自动显示正确的 SVN URL
+- 支持一键复制 SVN 地址和检出命令
+- 自动处理端口映射（如 Web UI 7001 端口对应 SVN 8090 端口）
+
 ### 权限管理
 
 系统支持两种角色：

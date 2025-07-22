@@ -21,14 +21,19 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
       connectSrc: ["'self'"],
-      fontSrc: ["'self'", "https:", "data:"],
+      fontSrc: ["'self'", "https:", "http:", "data:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
+      // 移除 upgrade-insecure-requests，允许 HTTP 访问
+      upgradeInsecureRequests: null,
     },
   },
+  // 禁用会导致 HTTP 问题的安全头
+  crossOriginOpenerPolicy: false,
+  hsts: false, // 禁用 HSTS，避免强制 HTTPS
 }));
 app.use(cors());
 app.use(express.json());
