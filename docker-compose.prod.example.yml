@@ -4,8 +4,8 @@ services:
     image: rongdede/svn-server-webui:latest
     container_name: svn-server-webui
     ports:
-      - "443:80"      # 使用 HTTPS（需要配置反向代理）
-      - "5000:5000"   # Web UI（建议使用反向代理）
+      - "8090:80"      # 使用 HTTPS（需要配置反向代理）
+      - "7001:5000"   # Web UI（建议使用反向代理）
     volumes:
       - /opt/svn/data:/data  # 使用独立的数据目录
     environment:

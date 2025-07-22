@@ -6,8 +6,8 @@ services:
       dockerfile: Dockerfile
     container_name: svn-server-webui
     ports:
-      - "80:80"       # SVN via HTTP
-      - "5000:5000"   # Web UI (如果5000端口被占用，可改为 "3000:5000")
+      - "8090:80"       # SVN via HTTP
+      - "7001:5000"   # Web UI 
     volumes:
       # 只需映射一个目录，简化使用
       - ./data:/data

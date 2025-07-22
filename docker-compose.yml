@@ -3,8 +3,8 @@ services:
     image: rongdede/svn-server-webui:latest
     container_name: svn-server-webui
     ports:
-      - "80:80"       # SVN via HTTP
-      - "5000:5000"   # Web UI (改用3000端口避免与AirPlay冲突)
+      - "8090:80"       # SVN via HTTP
+      - "7001:5000"   # Web UI (7001)
     volumes:
       # 只需映射一个目录，简化使用
       - ./data:/data
