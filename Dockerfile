@@ -39,11 +39,11 @@ RUN apk add --no-cache \
     nodejs \
     npm \
     supervisor \
+    curl \
     && rm -rf /var/cache/apk/*
 
 # 创建必要的目录
-RUN mkdir -p /svn/repos \
-    /svn/conf \
+RUN mkdir -p /svn \
     /svn/hooks \
     /var/log/supervisor \
     /app

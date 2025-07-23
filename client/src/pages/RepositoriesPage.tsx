@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Table, Button, Space, Modal, Form, Input, message, Popconfirm, Tag, Typography } from 'antd';
-import { PlusOutlined, DeleteOutlined, FolderOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, FolderOutlined, SyncOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { repositoryService } from '../services/repositoryService';
 import { useAuth } from '../contexts/AuthContext';
+import { api } from '../services/api';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
@@ -44,6 +45,21 @@ const RepositoriesPage: React.FC = () => {
     },
     onError: (error: any) => {
       message.error(error.response?.data?.error?.message || 'Failed to delete repository');
+    },
+  });
+
+  const syncMutation = useMutation({
+    mutationFn: () => api.post('/repositories/sync').then(res => res.data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['repositories'] });
+      if (data.added > 0) {
+        message.success(`Synchronized ${data.added} repositories: ${data.repositories.join(', ')}`);
+      } else {
+        message.info('All repositories are already synchronized');
+      }
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.error?.message || 'Failed to sync repositories');
     },
   });
 
@@ -126,13 +142,22 @@ const RepositoriesPage: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <Title level={2}>Repositories</Title>
         {isAdmin && (
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setCreateModalVisible(true)}
-          >
-            Create Repository
-          </Button>
+          <Space>
+            <Button
+              icon={<SyncOutlined />}
+              onClick={() => syncMutation.mutate()}
+              loading={syncMutation.isPending}
+            >
+              Sync from File System
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setCreateModalVisible(true)}
+            >
+              Create Repository
+            </Button>
+          </Space>
         )}
       </div>
 

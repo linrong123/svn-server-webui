@@ -5,6 +5,7 @@ import { svnService } from '../services/svnService';
 import { authenticate, authorize } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 import asyncHandler from 'express-async-handler';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
@@ -58,6 +59,59 @@ router.post('/', authenticate, authorize(['admin']), asyncHandler(async (req, re
     description,
     created_by: req.user!.id,
     created_at: new Date().toISOString()
+  });
+}));
+
+// Sync repositories from file system to database
+router.post('/sync', authenticate, authorize(['admin']), asyncHandler(async (req, res) => {
+  logger.info('Starting repository synchronization...');
+  
+  // Get all repositories from file system
+  const fsRepos = await svnService.listRepositories();
+  
+  // Get all repositories from database
+  const dbRepos = db.prepare('SELECT name FROM repositories').all() as { name: string }[];
+  const dbRepoNames = new Set(dbRepos.map(r => r.name));
+  
+  // Find repositories that need to be added to database
+  const reposToAdd = fsRepos.filter(repo => !dbRepoNames.has(repo.name));
+  
+  if (reposToAdd.length === 0) {
+    res.json({ 
+      message: 'All repositories are already synchronized',
+      added: 0
+    });
+    return;
+  }
+  
+  // Add missing repositories to database
+  const insertStmt = db.prepare(`
+    INSERT INTO repositories (name, description, created_by, created_at)
+    VALUES (?, ?, ?, datetime('now'))
+  `);
+  
+  let addedCount = 0;
+  const addedRepos: string[] = [];
+  
+  for (const repo of reposToAdd) {
+    try {
+      insertStmt.run(
+        repo.name,
+        'Synchronized from file system',
+        req.user!.id
+      );
+      addedCount++;
+      addedRepos.push(repo.name);
+      logger.info(`Synchronized repository: ${repo.name}`);
+    } catch (error) {
+      logger.error(`Failed to sync repository ${repo.name}:`, error);
+    }
+  }
+  
+  res.json({ 
+    message: 'Synchronization completed',
+    added: addedCount,
+    repositories: addedRepos
   });
 }));
 
